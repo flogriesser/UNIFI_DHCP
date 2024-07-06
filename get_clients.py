@@ -3,7 +3,7 @@ import requests
 import json
 import csv
 from datetime import datetime, timedelta
-from ipaddress import ip_address
+from ipaddress import ip_address, ip_network
 from dotenv import load_dotenv
 
 def update_clients():
@@ -103,6 +103,7 @@ def create_clients_conf():
 
     start_ip = ip_address(os.getenv('START_IP'))
     end_ip = ip_address(os.getenv('END_IP'))
+    ip_range = ip_network(f"{start_ip}/{end_ip - start_ip + 1}")
     csv_filename = '/etc/dhcp/clients.csv'
     conf_filename = '/etc/dhcp/Clients.conf'
 
@@ -134,8 +135,9 @@ def create_clients_conf():
         if mac == 'N/A':  # Skip clients with invalid MAC addresses
             continue
 
-        # Ensure no other IP addresses are assigned
-        if ip_address_str == 'N/A' or ip_address_str in assigned_ips:
+        # Check if IP address is within the specified range
+        if ip_address_str == 'N/A' or ip_address(ip_address_str) not in ip_range:
+            print(f"Alert: IP address {ip_address_str} for MAC {mac} is outside the specified range and will be reassigned.")
             while str(current_ip) in assigned_ips:
                 current_ip = next_ip(current_ip)
             ip_address_str = str(current_ip)

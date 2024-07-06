@@ -43,6 +43,7 @@ def update_clients():
 
     if response.status_code == 200:
         clients = response.json()['data']
+        print(f"Retrieved {len(clients)} clients from UniFi Controller")
     else:
         print('Failed to retrieve clients:', response.status_code, response.text)
         return
@@ -56,7 +57,7 @@ def update_clients():
         print('Logout failed:', response.status_code, response.text)
 
     # Define the CSV filename
-    csv_filename = 'clients.csv'
+    csv_filename = '/etc/dhcp/clients.csv'
     current_time = datetime.now()
     one_week_ago = current_time - timedelta(weeks=1)
 
@@ -71,6 +72,7 @@ def update_clients():
                 ip_address = row['ip']
                 if timestamp > one_week_ago:
                     existing_clients[mac] = {'timestamp': timestamp, 'mac': mac, 'ip': ip_address, 'hostname': row['hostname']}
+        print(f"Loaded {len(existing_clients)} existing clients from CSV")
 
     # Update or add clients
     for client in clients:
@@ -93,7 +95,7 @@ def update_clients():
         for client in existing_clients.values():
             writer.writerow(client)
 
-    print(f"Client information updated in {csv_filename}")
+    print(f"Client information updated in {csv_filename} with {len(existing_clients)} entries")
 
 def create_clients_conf():
     # Load environment variables from .env file
@@ -118,6 +120,7 @@ def create_clients_conf():
             reader = csv.DictReader(csv_file)
             for row in reader:
                 clients.append(row)
+        print(f"Loaded {len(clients)} clients from CSV for Clients.conf creation")
 
     # Assign IP addresses and create the Clients.conf entries
     assigned_ips = set()

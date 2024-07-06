@@ -1,12 +1,9 @@
 #!/bin/bash
 
-# Configuration
-CLIENTS_CONF="/etc/dhcp/Clients.conf"
-BACKUP_CONF="/etc/dhcp/Clients.conf.bak"
-PYTHON_SCRIPT="/etc/dhcp/get_clients.py"
-LOG_FILE="/etc/dhcp/update_dhcp.log"
-TELEGRAM_BOT_TOKEN="7492584229:AAEVk4b-RfQoxf6Xo6RI2piwX0OzMtlbh6k"
-TELEGRAM_CHAT_ID="-805394718"
+# Load environment variables from .env file
+set -a
+source .env
+set +a
 
 # Function to send a Telegram alert
 send_telegram_alert() {

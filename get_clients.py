@@ -134,7 +134,8 @@ def create_clients_conf():
         if mac == 'N/A':  # Skip clients with invalid MAC addresses
             continue
 
-        if ip_address_str == 'N/A':
+        # Ensure no other IP addresses are assigned
+        if ip_address_str == 'N/A' or ip_address_str in assigned_ips:
             while str(current_ip) in assigned_ips:
                 current_ip = next_ip(current_ip)
             ip_address_str = str(current_ip)

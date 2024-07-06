@@ -69,9 +69,9 @@ def update_clients():
             for row in reader:
                 mac = row['mac']
                 timestamp = datetime.strptime(row['timestamp'], '%Y-%m-%d %H:%M:%S')
-                ip_address = row['ip']
+                ip_addr = row['ip']
                 if timestamp > one_week_ago:
-                    existing_clients[mac] = {'timestamp': timestamp, 'mac': mac, 'ip': ip_address, 'hostname': row['hostname']}
+                    existing_clients[mac] = {'timestamp': timestamp, 'mac': mac, 'ip': ip_addr, 'hostname': row['hostname']}
         print(f"Loaded {len(existing_clients)} existing clients from CSV")
 
     # Update or add clients
@@ -103,7 +103,6 @@ def create_clients_conf():
 
     start_ip = ip_address(os.getenv('START_IP'))
     end_ip = ip_address(os.getenv('END_IP'))
-    ip_range = ip_network(f"{start_ip}/{end_ip - start_ip + 1}")
     csv_filename = '/etc/dhcp/clients.csv'
     conf_filename = '/etc/dhcp/Clients.conf'
 
@@ -136,7 +135,7 @@ def create_clients_conf():
             continue
 
         # Check if IP address is within the specified range
-        if ip_address_str == 'N/A' or ip_address(ip_address_str) not in ip_range:
+        if ip_address_str != 'N/A' and (ip_address(ip_address_str) < start_ip or ip_address(ip_address_str) > end_ip):
             print(f"Alert: IP address {ip_address_str} for MAC {mac} is outside the specified range and will be reassigned.")
             while str(current_ip) in assigned_ips:
                 current_ip = next_ip(current_ip)

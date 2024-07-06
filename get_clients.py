@@ -135,7 +135,7 @@ def create_clients_conf():
             continue
 
         # Check if IP address is within the specified range
-        if ip_address_str == 'N/A' or ip_address(ip_address_str) < start_ip or ip_address(ip_address_str) > end_ip:
+        if ip_address_str != 'N/A' and (ip_address(ip_address_str) < start_ip or ip_address(ip_address_str) > end_ip):
             print(f"Alert: IP address {ip_address_str} for MAC {mac} is outside the specified range and will be reassigned.")
             while str(current_ip) in assigned_ips:
                 current_ip = next_ip(current_ip)
